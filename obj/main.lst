@@ -1,6 +1,6 @@
                                       1 ;--------------------------------------------------------
                                       2 ; File Created by SDCC : free open source ISO C Compiler 
-                                      3 ; Version 4.3.2 #14228 (MINGW64)
+                                      3 ; Version 4.4.1 #14650 (MINGW64)
                                       4 ;--------------------------------------------------------
                                       5 	.module main
                                       6 	.optsdcc -msm83
@@ -10,7 +10,7 @@
                                      10 ;--------------------------------------------------------
                                      11 	.globl _main
                                      12 	.globl _InputRead
-                                     13 	.globl _InputJustPressed
+                                     13 	.globl _set_bkg_data
                                      14 	.globl _vsync
                                      15 	.globl _framecount
                                      16 ;--------------------------------------------------------
@@ -20,8 +20,8 @@
                                      20 ; ram data
                                      21 ;--------------------------------------------------------
                                      22 	.area _DATA
-      000000                         23 _framecount::
-      000000                         24 	.ds 1
+    00000000                         23 _framecount::
+    00000000                         24 	.ds 1
                                      25 ;--------------------------------------------------------
                                      26 ; ram data
                                      27 ;--------------------------------------------------------
@@ -46,42 +46,38 @@
                                      46 ; code
                                      47 ;--------------------------------------------------------
                                      48 	.area _CODE
-                                     49 ;src/main.c:9: void main(void)
+                                     49 ;src/main.c:11: void main(void)
                                      50 ;	---------------------------------
                                      51 ; Function main
                                      52 ; ---------------------------------
-      000000                         53 _main::
-                                     54 ;src/main.c:12: DISPLAY_ON;
-      000000 F0r00            [12]   55 	ldh	a, (_LCDC_REG + 0)
-      000002 F6 80            [ 8]   56 	or	a, #0x80
-      000004 E0r00            [12]   57 	ldh	(_LCDC_REG + 0), a
-                                     58 ;src/main.c:13: SHOW_BKG;
-      000006 F0r00            [12]   59 	ldh	a, (_LCDC_REG + 0)
-      000008 F6 01            [ 8]   60 	or	a, #0x01
-      00000A E0r00            [12]   61 	ldh	(_LCDC_REG + 0), a
-                                     62 ;src/main.c:16: while(1) {
-      00000C                         63 00104$:
-                                     64 ;src/main.c:19: if (InputJustPressed(J_RIGHT)) {scroll_bkg(1, 0);}
-      00000C 3E 01            [ 8]   65 	ld	a, #0x01
-      00000E CDr00r00         [24]   66 	call	_InputJustPressed
-      000011 B7               [ 4]   67 	or	a, a
-      000012 28 05            [12]   68 	jr	Z, 00102$
-                                     69 ;c:\gbdk\include\gb\gb.h:1391: SCX_REG+=x, SCY_REG+=y;
-      000014 F0r00            [12]   70 	ldh	a, (_SCX_REG + 0)
-      000016 3C               [ 4]   71 	inc	a
-      000017 E0r00            [12]   72 	ldh	(_SCX_REG + 0), a
-                                     73 ;src/main.c:19: if (InputJustPressed(J_RIGHT)) {scroll_bkg(1, 0);}
-      000019                         74 00102$:
-                                     75 ;src/main.c:21: InputRead();
-      000019 CDr00r00         [24]   76 	call	_InputRead
-                                     77 ;src/main.c:23: vsync(); // Done processing, yield CPU and wait for start of next frame
-      00001C CDr00r00         [24]   78 	call	_vsync
-                                     79 ;src/main.c:24: framecount = framecount + 1;
-      00001F 21r00r00         [12]   80 	ld	hl, #_framecount
-      000022 34               [12]   81 	inc	(hl)
-      000023 7E               [ 8]   82 	ld	a, (hl)
-                                     83 ;src/main.c:27: }
-      000024 18 E6            [12]   84 	jr	00104$
-                                     85 	.area _CODE
-                                     86 	.area _INITIALIZER
-                                     87 	.area _CABS (ABS)
+    00000000                         53 _main::
+                                     54 ;src/main.c:14: set_bkg_data(0, test_tile_count, test_tiles);
+    00000000 11r00r00         [12]   55 	ld	de, #_test_tiles
+    00000003 D5               [16]   56 	push	de
+    00000004 21 00 26         [12]   57 	ld	hl, #0x2600
+    00000007 E5               [16]   58 	push	hl
+    00000008 CDr00r00         [24]   59 	call	_set_bkg_data
+    0000000B E8 04            [16]   60 	add	sp, #4
+                                     61 ;src/main.c:16: DISPLAY_ON;
+    0000000D F0r00            [12]   62 	ldh	a, (_LCDC_REG + 0)
+    0000000F F6 80            [ 8]   63 	or	a, #0x80
+    00000011 E0r00            [12]   64 	ldh	(_LCDC_REG + 0), a
+                                     65 ;src/main.c:17: SHOW_BKG;
+    00000013 F0r00            [12]   66 	ldh	a, (_LCDC_REG + 0)
+    00000015 F6 01            [ 8]   67 	or	a, #0x01
+    00000017 E0r00            [12]   68 	ldh	(_LCDC_REG + 0), a
+                                     69 ;src/main.c:20: while(1) {
+    00000019                         70 00102$:
+                                     71 ;src/main.c:25: vsync(); // Done processing, yield CPU and wait for start of next frame
+    00000019 CDr00r00         [24]   72 	call	_vsync
+                                     73 ;src/main.c:27: InputRead();
+    0000001C CDr00r00         [24]   74 	call	_InputRead
+                                     75 ;src/main.c:28: framecount = framecount + 1;
+    0000001F 21r00r00         [12]   76 	ld	hl, #_framecount
+    00000022 34               [12]   77 	inc	(hl)
+    00000023 7E               [ 8]   78 	ld	a, (hl)
+                                     79 ;src/main.c:32: }
+    00000024 18 F3            [12]   80 	jr	00102$
+                                     81 	.area _CODE
+                                     82 	.area _INITIALIZER
+                                     83 	.area _CABS (ABS)

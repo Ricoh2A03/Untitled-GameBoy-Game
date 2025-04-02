@@ -1,6 +1,6 @@
 ;--------------------------------------------------------
 ; File Created by SDCC : free open source ISO C Compiler 
-; Version 4.3.2 #14228 (MINGW64)
+; Version 4.4.1 #14650 (MINGW64)
 ;--------------------------------------------------------
 	.module main
 	.optsdcc -msm83
@@ -10,7 +10,7 @@
 ;--------------------------------------------------------
 	.globl _main
 	.globl _InputRead
-	.globl _InputJustPressed
+	.globl _set_bkg_data
 	.globl _vsync
 	.globl _framecount
 ;--------------------------------------------------------
@@ -46,42 +46,38 @@ _framecount::
 ; code
 ;--------------------------------------------------------
 	.area _CODE
-;src/main.c:9: void main(void)
+;src/main.c:11: void main(void)
 ;	---------------------------------
 ; Function main
 ; ---------------------------------
 _main::
-;src/main.c:12: DISPLAY_ON;
+;src/main.c:14: set_bkg_data(0, test_tile_count, test_tiles);
+	ld	de, #_test_tiles
+	push	de
+	ld	hl, #0x2600
+	push	hl
+	call	_set_bkg_data
+	add	sp, #4
+;src/main.c:16: DISPLAY_ON;
 	ldh	a, (_LCDC_REG + 0)
 	or	a, #0x80
 	ldh	(_LCDC_REG + 0), a
-;src/main.c:13: SHOW_BKG;
+;src/main.c:17: SHOW_BKG;
 	ldh	a, (_LCDC_REG + 0)
 	or	a, #0x01
 	ldh	(_LCDC_REG + 0), a
-;src/main.c:16: while(1) {
-00104$:
-;src/main.c:19: if (InputJustPressed(J_RIGHT)) {scroll_bkg(1, 0);}
-	ld	a, #0x01
-	call	_InputJustPressed
-	or	a, a
-	jr	Z, 00102$
-;c:\gbdk\include\gb\gb.h:1391: SCX_REG+=x, SCY_REG+=y;
-	ldh	a, (_SCX_REG + 0)
-	inc	a
-	ldh	(_SCX_REG + 0), a
-;src/main.c:19: if (InputJustPressed(J_RIGHT)) {scroll_bkg(1, 0);}
+;src/main.c:20: while(1) {
 00102$:
-;src/main.c:21: InputRead();
-	call	_InputRead
-;src/main.c:23: vsync(); // Done processing, yield CPU and wait for start of next frame
+;src/main.c:25: vsync(); // Done processing, yield CPU and wait for start of next frame
 	call	_vsync
-;src/main.c:24: framecount = framecount + 1;
+;src/main.c:27: InputRead();
+	call	_InputRead
+;src/main.c:28: framecount = framecount + 1;
 	ld	hl, #_framecount
 	inc	(hl)
 	ld	a, (hl)
-;src/main.c:27: }
-	jr	00104$
+;src/main.c:32: }
+	jr	00102$
 	.area _CODE
 	.area _INITIALIZER
 	.area _CABS (ABS)

@@ -3,6 +3,7 @@
         "hardware.h": "c",
         "gb.h": "c",
         "stdint.h": "c",
-        "input.h": "c"
+        "input.h": "c",
+        "test_tiles.h": "c"
     }
 }

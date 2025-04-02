@@ -4,10 +4,14 @@
 
 #include "input.h"
 
+#include "test_tiles.h"
+
 uint8_t framecount;
 
 void main(void)
 {
+
+    set_bkg_data(0, test_tile_count, test_tiles);
 
     DISPLAY_ON;
     SHOW_BKG;
@@ -16,12 +20,13 @@ void main(void)
     while(1) {
         // Game main loop processing goes here
 
-        if (InputJustPressed(J_RIGHT)) {scroll_bkg(1, 0);}
-
-        InputRead();
+        
 
         vsync(); // Done processing, yield CPU and wait for start of next frame
+        
+        InputRead();
         framecount = framecount + 1;
+    
     }
 
 }

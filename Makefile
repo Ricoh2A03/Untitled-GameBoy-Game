@@ -21,9 +21,10 @@ PROJECTNAME = main
 SRCDIR      = src
 OBJDIR      = obj
 RESDIR      = res
+TILEDIR		= tile
 BINS	    = $(OBJDIR)/$(PROJECTNAME).gb
+
 CSOURCES    = $(foreach dir,$(SRCDIR),$(notdir $(wildcard $(dir)/*.c))) $(foreach dir,$(RESDIR),$(notdir $(wildcard $(dir)/*.c)))
-ASMSOURCES  = $(foreach dir,$(SRCDIR),$(notdir $(wildcard $(dir)/*.s)))
 OBJS       = $(CSOURCES:%.c=$(OBJDIR)/%.o) $(ASMSOURCES:%.s=$(OBJDIR)/%.o)
 
 #all:	prepare $(BINS)
